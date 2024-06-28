@@ -1,0 +1,27 @@
+*{
+  margin : 0px;
+}
+
+.app{
+  background-color: #fafafa;
+  padding-left: 10px;
+}
+
+.app_header{
+  padding: 15px;
+  background-color: white;
+  border-bottom:  1px solid lightgray;
+  object-fit: contain;
+  display: flex;
+  justify-content: space-between;
+}
+
+.app_headerImage{
+  height: 30px;
+  width:80px;
+}
+
+.modal__form{
+  display: flex;
+  flex-direction: column;
+}
