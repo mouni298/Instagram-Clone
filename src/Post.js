@@ -2,7 +2,7 @@ import { Avatar } from '@mui/material/Avatar'
 import React from 'react'
 import './Post.css'
 
-function Post(username,imgUrl,caption) {
+function Post({username,imgUrl,caption}) {
   return (
     <div className='post'>
         <div className='post__header'>

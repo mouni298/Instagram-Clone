@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import './App.css';
 import { collection, onSnapshot } from 'firebase/firestore';
 import Post from './Post'
+import PostUpload from './PostUpload'
 import { Input,Button, Modal, Box } from '@mui/material';
 import {createUserWithEmailAndPassword,updateProfile,signOut,signInWithEmailAndPassword} from "firebase/auth";
 import {db,auth,storage} from "./firebase";
@@ -30,6 +31,7 @@ function App() {
   
 
   const handleModal = ()=>setOpen(true)
+  const handleSignInModal = ()=>setOpenSignIn(true)
 
   useEffect(()=>{
     const unsubscribe = onSnapshot(collection(db,posts),(snapshot)=>{
@@ -39,10 +41,13 @@ function App() {
   },[]);
 
   useEffect(()=>{
-    auth.onAuthStateChanged(()=>{
+    auth.onAuthStateChanged((authUser)=>{
       if(authUser){
         console.log(authUser)
         setUser(authUser)
+      }
+      else{
+        setUser(null)
       }
     })
   })
@@ -52,7 +57,7 @@ function App() {
     createUserWithEmailAndPassword(auth,email,password)
     .then((authUser)=>{
       return updateProfile(authUser.user,{
-        displayMame:username,
+        displayName:username,
       });
     })
     .catch((error)=>alert(error.message))
@@ -65,15 +70,24 @@ function App() {
     .catch((errror)=>alert(error.message))
     setOpenSignIn(false)
   }
-
+  
   return (
     <div className="app">
+      {user?.displayName ?
+      (<PostUpload username={user.displayName}/>):
+      (<h3>Sorry, you need to login to upload</h3>)}
       <div className='app_header'>
         <img 
         className='app_headerImage'
         src = "https://clipart.info/images/ccovers/1559063345Instagram-logo-.png"
         alt="instagram"
         />
+        {user ?
+        (<Button onClick={()=>signOut(auth)}>Logout</Button> ) :
+        (<div>
+        <Button onClick={handleSignUpModal}>Sign up</Button>
+        <Button onClick={handleSignInModal}>Sign In</Button>
+        </div>)}
       </div>
       <Modal open= {open} onClose={()=>setOpen(false)}
       aria-labelledby="modal-modal-title"
