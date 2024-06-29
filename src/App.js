@@ -5,7 +5,7 @@ import Post from './Post'
 import PostUpload from './PostUpload'
 import { Input,Button, Modal, Box } from '@mui/material';
 import {createUserWithEmailAndPassword,updateProfile,signOut,signInWithEmailAndPassword} from "firebase/auth";
-import {db,auth,storage} from "./firebase";
+import {db,auth} from "./firebase";
 
 const style={
   position: 'absolute',
@@ -30,11 +30,11 @@ function App() {
   const [openSignIn,setOpenSignIn] = useState(false);
   
 
-  const handleModal = ()=>setOpen(true)
+  const handleSignUpModal = ()=>setOpen(true)
   const handleSignInModal = ()=>setOpenSignIn(true)
 
   useEffect(()=>{
-    const unsubscribe = onSnapshot(collection(db,posts),(snapshot)=>{
+    const unsubscribe = onSnapshot(collection(db,"posts"),(snapshot)=>{
       setPosts(snapshot.docs.map((doc)=>({post:doc.data(),id:doc.id})))
     })
     return ()=> unsubscribe();
@@ -67,10 +67,10 @@ function App() {
   const signin = (event)=>{
     event.preventDefault();
     signInWithEmailAndPassword(auth,email,password)
-    .catch((errror)=>alert(error.message))
+    .catch((error)=>alert(error.message))
     setOpenSignIn(false)
   }
-  
+
   return (
     <div className="app">
       {user?.displayName ?
@@ -96,8 +96,8 @@ function App() {
           <center>
             <img src="https://clipart.info/images/ccovers/1559063345Instagram-logo-.png" alt="insta" style={{width:'100px',height:'50px'}}/>
             <form className='modal__form'>
-            <Input type = "text" placeholder='email' value={caption} onChange={(e)=>setEmail(e.target.value)}></Input>
-            <Input type = "text" placeholder='username' value={caption} onChange={(e)=>setUsername(e.target.value)}></Input>
+            <Input type = "text" placeholder='email' value={email} onChange={(e)=>setEmail(e.target.value)}></Input>
+            <Input type = "text" placeholder='username' value={username} onChange={(e)=>setUsername(e.target.value)}></Input>
             <Input type = "text" placeholder='pasword' value={password} onChange={(e)=>setPassword(e.target.value)}></Input>
             <Button onClick = {signup}>Sign Up</Button>
             </form>
@@ -111,7 +111,7 @@ function App() {
           <center>
             <img src="https://clipart.info/images/ccovers/1559063345Instagram-logo-.png" alt="insta" style={{width:'100px',height:'50px'}}/>
             <form className='modal__form'>
-            <Input type = "text" placeholder='email' value={caption} onChange={(e)=>setEmail(e.target.value)}></Input>
+            <Input type = "text" placeholder='email' value={email} onChange={(e)=>setEmail(e.target.value)}></Input>
             <Input type = "text" placeholder='pasword' value={password} onChange={(e)=>setPassword(e.target.value)}></Input>
             <Button onClick = {signin}>Sign In</Button>
             </form>

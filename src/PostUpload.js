@@ -2,7 +2,6 @@ import { Button, Input } from '@mui/material'
 import React, { useState } from 'react'
 import {db,storage} from './firebase'
 import { getDownloadURL,ref,uploadBytesResumable } from 'firebase/storage';
-import { storage } from './firebase'
 import {collection} from 'firebase/firestore';
 import firebase from 'firebase/compat/app'
 
