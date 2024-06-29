@@ -3,6 +3,8 @@ import './App.css';
 import { collection, onSnapshot } from 'firebase/firestore';
 import Post from './Post'
 import { Input,Button, Modal, Box } from '@mui/material';
+import {createUserWithEmailAndPassword,updateProfile,signOut,signInWithEmailAndPassword} from "firebase/auth";
+import {db,auth,storage} from "./firebase";
 
 const style={
   position: 'absolute',
@@ -18,8 +20,14 @@ const style={
 }
 
 function App() {
-  const [posts,setPosts] = useState([])
+  const [posts,setPosts] = useState([]);
   const [open,setOpen] = useState(false);
+  const [email,setEmail] = useState(null);
+  const [username,setUsername] = useState(null);
+  const [password,setPassword] = useState(null);
+  const [user,setUser] = useState(null);
+  const [openSignIn,setOpenSignIn] = useState(false);
+  
 
   const handleModal = ()=>setOpen(true)
 
@@ -30,10 +38,32 @@ function App() {
     return ()=> unsubscribe();
   },[]);
 
+  useEffect(()=>{
+    auth.onAuthStateChanged(()=>{
+      if(authUser){
+        console.log(authUser)
+        setUser(authUser)
+      }
+    })
+  })
+
   const signup = (e)=>{
     e.preventDefault();
+    createUserWithEmailAndPassword(auth,email,password)
+    .then((authUser)=>{
+      return updateProfile(authUser.user,{
+        displayMame:username,
+      });
+    })
+    .catch((error)=>alert(error.message))
     setOpen(false);
+  }
 
+  const signin = (event)=>{
+    event.preventDefault();
+    signInWithEmailAndPassword(auth,email,password)
+    .catch((errror)=>alert(error.message))
+    setOpenSignIn(false)
   }
 
   return (
@@ -54,12 +84,24 @@ function App() {
             <form className='modal__form'>
             <Input type = "text" placeholder='email' value={caption} onChange={(e)=>setEmail(e.target.value)}></Input>
             <Input type = "text" placeholder='username' value={caption} onChange={(e)=>setUsername(e.target.value)}></Input>
-            <Input type = "text" placeholder='pasword' value={password} onChange={(e)=>setPasswors(e.target.value)}></Input>
+            <Input type = "text" placeholder='pasword' value={password} onChange={(e)=>setPassword(e.target.value)}></Input>
             <Button onClick = {signup}>Sign Up</Button>
-
             </form>
           </center>
-
+        </Box>
+      </Modal>
+      <Modal open= {openSignIn} onClose={()=>setOpenSignIn(false)}
+      aria-labelledby="modal-modal-title"
+      aria-describedby="modal-modal-description">
+        <Box sx={style}>
+          <center>
+            <img src="https://clipart.info/images/ccovers/1559063345Instagram-logo-.png" alt="insta" style={{width:'100px',height:'50px'}}/>
+            <form className='modal__form'>
+            <Input type = "text" placeholder='email' value={caption} onChange={(e)=>setEmail(e.target.value)}></Input>
+            <Input type = "text" placeholder='pasword' value={password} onChange={(e)=>setPassword(e.target.value)}></Input>
+            <Button onClick = {signin}>Sign In</Button>
+            </form>
+          </center>
         </Box>
       </Modal>
     {posts.map(({post,id})=><Post key={id} username={post.username} imgUrl={post.imgUrl} caption={post.caption}/>)}
